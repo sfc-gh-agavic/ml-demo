@@ -141,7 +141,10 @@ call utility.public.loopquery('GRANT usage ON warehouse whXXX TO ROLE roleXXX', 
 call utility.public.loopquery('alter user userXXX set default_warehouse = whXXX;', $num_users);																																				
 
 use role accountadmin;																																				
-create or replace database ML_HOL_DB;																																				
+create or replace database ML_HOL_DB;
+
+-- Set the default notebook compute pool for all notebooks in this database
+ALTER DATABASE ML_HOL_DB SET DEFAULT_NOTEBOOK_COMPUTE_POOL_CPU = 'ML_TEAM_CPU_XS';																																				
 																																				
 -- set up the schemas and grant permissions																																				
 call utility.public.loopquery('create or replace schema ML_HOL_DB.ML_SCHEMAXXX;', $num_users);																																				
@@ -205,3 +208,5 @@ USE ROLE ROLE1;
 LS @ML_HOL_DB.PUBLIC.DIAMONDS_ASSETS;																																				
 																																				
 select $1, $2, $3 from @ML_HOL_DB.PUBLIC.DIAMONDS_ASSETS limit 10;																																				
+
+SHOW PARAMETERS LIKE 'DEFAULT_NOTEBOOK_COMPUTE_POOL_CPU' IN DATABASE ML_HOL_DB;
