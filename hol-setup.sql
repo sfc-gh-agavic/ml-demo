@@ -47,6 +47,19 @@ CREATE OR REPLACE EXTERNAL ACCESS INTEGRATION pypi_access_integration
   ALLOWED_NETWORK_RULES = (pypi_network_rule)
   ENABLED               = TRUE;
 
+-- Network Rule — allow egress to GitHub (for git integration)
+CREATE OR REPLACE NETWORK RULE github_network_rule
+  MODE        = EGRESS
+  TYPE        = HOST_PORT
+  VALUE_LIST  = ('github.com');
+
+-- API Integration — allow Snowflake to access the HOL GitHub repo
+CREATE OR REPLACE API INTEGRATION github_api_integration
+  API_PROVIDER         = git_https_api
+  API_ALLOWED_PREFIXES = ('https://github.com/')
+  ALLOWED_AUTHENTICATION_SECRETS = ()
+  ENABLED              = TRUE;
+
 
 -- Compute Pools
 
@@ -157,7 +170,10 @@ call utility.public.loopquery('GRANT USAGE ON COMPUTE POOL ML_TEAM_CPU_HIGHMEM_M
 call utility.public.loopquery('GRANT USAGE ON COMPUTE POOL ML_TEAM_GPU_A100 TO ROLE roleXXX', $num_users);
 
 -- PyPI external access
-call utility.public.loopquery('GRANT USAGE ON INTEGRATION pypi_access_integration TO ROLE roleXXX', $num_users);																																
+call utility.public.loopquery('GRANT USAGE ON INTEGRATION pypi_access_integration TO ROLE roleXXX', $num_users);
+
+-- GitHub API integration access
+call utility.public.loopquery('GRANT USAGE ON INTEGRATION github_api_integration TO ROLE roleXXX', $num_users);																																
 																																				
 USE ROLE ACCOUNTADMIN;																																				
 																																				
