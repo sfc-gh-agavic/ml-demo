@@ -44,7 +44,7 @@ VALUE_LIST = ('pypi.org', 'pypi.python.org', 'pythonhosted.org', 'files.pythonho
 
 -- External Access Integration — expose PyPI to notebooks / SPCS services
 CREATE OR REPLACE EXTERNAL ACCESS INTEGRATION pypi_access_integration
-  ALLOWED_NETWORK_RULES = (pypi_network_rule)
+  ALLOWED_NETWORK_RULES = (utility.public.pypi_network_rule)
   ENABLED               = TRUE;
 
 -- Network Rule — allow egress to GitHub (for git integration)
@@ -171,8 +171,19 @@ call utility.public.loopquery('GRANT USAGE ON COMPUTE POOL ML_TEAM_CPU_XS TO ROL
 call utility.public.loopquery('GRANT USAGE ON COMPUTE POOL ML_TEAM_CPU_S TO ROLE roleXXX', $num_users);
 call utility.public.loopquery('GRANT USAGE ON COMPUTE POOL ML_TEAM_CPU_HIGHMEM_M TO ROLE roleXXX', $num_users);
 call utility.public.loopquery('GRANT USAGE ON COMPUTE POOL ML_TEAM_GPU_A100 TO ROLE roleXXX', $num_users);
+-- Compute pool monitoring (for scale_cluster / get_nodes)
+call utility.public.loopquery('GRANT MONITOR ON COMPUTE POOL ML_TEAM_CPU_XS TO ROLE roleXXX', $num_users);
+call utility.public.loopquery('GRANT MONITOR ON COMPUTE POOL ML_TEAM_CPU_S TO ROLE roleXXX', $num_users);
+call utility.public.loopquery('GRANT MONITOR ON COMPUTE POOL ML_TEAM_CPU_HIGHMEM_M TO ROLE roleXXX', $num_users);
+call utility.public.loopquery('GRANT MONITOR ON COMPUTE POOL ML_TEAM_GPU_A100 TO ROLE roleXXX', $num_users);
 -- Allow public ingress endpoints on SPCS service. eg. for Ray dashboards
 GRANT BIND SERVICE ENDPOINT ON ACCOUNT TO ROLE hol_parent;
+
+-- Dynamic Table access (Feature Store)
+call utility.public.loopquery('GRANT CREATE DYNAMIC TABLE ON SCHEMA ML_HOL_DB.ML_SCHEMAXXX TO ROLE roleXXX', $num_users);
+
+-- Model Registry access
+call utility.public.loopquery('GRANT CREATE MODEL ON SCHEMA ML_HOL_DB.ML_SCHEMAXXX TO ROLE roleXXX', $num_users);
 
 -- PyPI external access
 call utility.public.loopquery('GRANT USAGE ON INTEGRATION pypi_access_integration TO ROLE roleXXX', $num_users);
