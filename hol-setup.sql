@@ -171,6 +171,8 @@ call utility.public.loopquery('GRANT USAGE ON COMPUTE POOL ML_TEAM_CPU_XS TO ROL
 call utility.public.loopquery('GRANT USAGE ON COMPUTE POOL ML_TEAM_CPU_S TO ROLE roleXXX', $num_users);
 call utility.public.loopquery('GRANT USAGE ON COMPUTE POOL ML_TEAM_CPU_HIGHMEM_M TO ROLE roleXXX', $num_users);
 call utility.public.loopquery('GRANT USAGE ON COMPUTE POOL ML_TEAM_GPU_A100 TO ROLE roleXXX', $num_users);
+-- Allow public ingress endpoints on SPCS service. eg. for Ray dashboards
+GRANT BIND SERVICE ENDPOINT ON ACCOUNT TO ROLE hol_parent;
 
 -- PyPI external access
 call utility.public.loopquery('GRANT USAGE ON INTEGRATION pypi_access_integration TO ROLE roleXXX', $num_users);
